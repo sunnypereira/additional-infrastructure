@@ -1,0 +1,36 @@
+name: Deploy Otel Collector
+
+on:
+  workflow_dispatch:
+
+jobs:
+  otel_deploy:
+    name: Deploy Opentelemetry Collector Contrib
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Configure Kubeconfig
+        uses: azure/aks-set-context@v4
+        with:
+          resource-group: ${{ vars.RESOURCE_GROUP }}
+          cluster-name: ${{ vars.K8S_CLUSTER_NAME }}
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: "v3.18.2"
+
+      - name: Deploy Application
+        run: |
+          helm upgrade --install otel-collector otel-collector-chart \
+          --set grafanacloud.otlpendpoint="${{ vars.OTEL_ENDPOINT }}" \
+          --set grafanacloud.username="${{ vars.OTEL_USERNAME}}" \
+          --set grafanacloud.password="${{ secrets.OTEL_PASSWORD }}"

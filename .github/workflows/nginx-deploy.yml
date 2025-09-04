@@ -1,0 +1,32 @@
+name: Deploy Nginx
+
+on:
+  workflow_dispatch:
+
+jobs:
+  nginx_deploy:
+    name: Deploy Nginx Ingress Controller
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Configure Kubeconfig
+        uses: azure/aks-set-context@v4
+        with:
+          resource-group: ${{ vars.RESOURCE_GROUP }}
+          cluster-name: ${{ vars.K8S_CLUSTER_NAME }}
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: "v3.18.2"
+
+      - name: Deploy Nginx
+        run: |
+          helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx \
+          --repo https://kubernetes.github.io/ingress-nginx \
+          --set controller.service.type=LoadBalancer

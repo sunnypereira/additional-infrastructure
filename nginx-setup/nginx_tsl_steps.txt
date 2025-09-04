@@ -1,0 +1,22 @@
+
+Below IP and HOST are to be exported for use in the cmd. 
+The actual value would be the load balancer IP of nginx in AKS
+And HOST would be IP's period replaced with - and then .nip.io
+
+export IP="20.50.100.200"
+export HOST="20-50-100-200.nip.io"
+
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+  -keyout tls.key \
+  -out tls.crt \
+  -subj "/CN=$HOST" \
+  -addext "subjectAltName=DNS:$HOST,IP:$IP"
+
+kubectl create secret tls api-tls-secret \
+  --cert=tls.crt \
+  --key=tls.key
+
+Now replace the value in the api-ingress.yml for hosts and host
+
+Now run: 
+  kubectl apply -f api-ingress.yml

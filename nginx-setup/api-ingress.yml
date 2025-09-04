@@ -1,0 +1,40 @@
+# api-ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: api-gateway
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+spec:
+  tls:
+    - hosts:
+        - 20-50-100-200.nip.io
+      secretName: api-tls-secret
+  rules:
+    - host: 20-50-100-200.nip.io
+      http:
+        paths:
+          - path: api/product/(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: product-service
+                port:
+                  number: 80
+
+          - path: /api/cart/(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: cart-service
+                port:
+                  number: 80
+
+          - path: /api/checkout/(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: checkout-service
+                port:
+                  number: 80

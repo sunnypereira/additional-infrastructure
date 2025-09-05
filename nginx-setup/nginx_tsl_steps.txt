@@ -3,8 +3,8 @@ Below IP and HOST are to be exported for use in the cmd.
 The actual value would be the load balancer IP of nginx in AKS
 And HOST would be IP's period replaced with - and then .nip.io
 
-export IP="20.50.100.200"
-export HOST="20-50-100-200.nip.io"
+export IP="52.225.92.124"
+export HOST="52-225-92-124.nip.io"
 
 openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
   -keyout tls.key \

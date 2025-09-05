@@ -4,35 +4,37 @@ kind: Ingress
 metadata:
   name: api-gateway
   annotations:
+    # kubernetes.io/ingress.class: "nginx"
     nginx.ingress.kubernetes.io/use-regex: "true"
-    nginx.ingress.kubernetes.io/rewrite-target: /$1
+    # nginx.ingress.kubernetes.io/rewrite-target: /$1
 spec:
+  ingressClassName: nginx
   tls:
     - hosts:
-        - 20-50-100-200.nip.io
+        - 52-225-92-124.nip.io
       secretName: api-tls-secret
   rules:
-    - host: 20-50-100-200.nip.io
+    - host: 52-225-92-124.nip.io
       http:
         paths:
-          - path: api/product/(.*)
-            pathType: ImplementationSpecific
+          - path: /api/product
+            pathType: Prefix
             backend:
               service:
                 name: product-service
                 port:
                   number: 80
 
-          - path: /api/cart/(.*)
-            pathType: ImplementationSpecific
+          - path: /api/cart/
+            pathType: Prefix
             backend:
               service:
                 name: cart-service
                 port:
                   number: 80
 
-          - path: /api/checkout/(.*)
-            pathType: ImplementationSpecific
+          - path: /api/checkout/
+            pathType: Prefix
             backend:
               service:
                 name: checkout-service
